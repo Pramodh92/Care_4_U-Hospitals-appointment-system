@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book Appointment - Care_4_U Hospitals">
+    <title>Book Appointment - Care_4_U Hospitals</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="background: var(--off-white);">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1 style="font-size: 1.75rem; margin: 0;">Care<span class="highlight">_4_</span>U</h1>
+            </div>
+            <div class="nav-right">
+                <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="booking-container">
+        <div class="booking-card">
+            <h2>Book Your Appointment</h2>
+            <p class="subtitle">Select your preferred doctor, date, and time</p>
+
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="doctor">Select Doctor</label>
+                    <select id="doctor" name="doctor" required>
+                        <option value="">-- Select a Doctor --</option>
+                    </select>
+                </div>
+
+                <div id="doctorInfo" class="doctor-info-box" style="display: none;">
+                    <h4>Doctor Information</h4>
+                    <p><strong>Name:</strong> <span id="selectedDoctorName"></span></p>
+                    <p><strong>Specialization:</strong> <span id="selectedDoctorSpec"></span></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Appointment Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time">Appointment Time</label>
+                    <select id="time" name="time" required>
+                        <option value="">-- Select Time --</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                    </select>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Book Appointment</button>
+            </form>
+        </div>
+
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <h3>✅ Appointment Confirmed!</h3>
+                <div id="appointmentDetails"></div>
+                <p class="notification-info">📧 A confirmation email has been sent to your registered email address.</p>
+                <button onclick="closeModal()" class="btn btn-primary">Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Check if user is logged in
+        const userId = localStorage.getItem('user_id');
+        const userName = localStorage.getItem('user_name');
+
+        if (!userId) {
+            window.location.href = 'index.html';
+        }
+
+        let doctors = [];
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Set minimum date to today
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // Load doctors
+        async function loadDoctors() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors`);
+                const data = await response.json();
+
+                if (data.success && data.doctors.length > 0) {
+                    doctors = data.doctors;
+                    const doctorSelect = document.getElementById('doctor');
+
+                    doctors.forEach(doctor => {
+                        const option = document.createElement('option');
+                        option.value = doctor.doctor_id;
+                        option.textContent = `Dr. ${doctor.name} - ${doctor.specialization}`;
+                        doctorSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                document.getElementById('errorMessage').textContent = 'Unable to load doctors.';
+            }
+        }
+
+        // Show doctor info when selected
+        document.getElementById('doctor').addEventListener('change', (e) => {
+            const doctorId = e.target.value;
+            const doctorInfo = document.getElementById('doctorInfo');
+
+            if (doctorId) {
+                const doctor = doctors.find(d => d.doctor_id === doctorId);
+                if (doctor) {
+                    document.getElementById('selectedDoctorName').textContent = `Dr. ${doctor.name}`;
+                    document.getElementById('selectedDoctorSpec').textContent = doctor.specialization;
+                    doctorInfo.style.display = 'block';
+                }
+            } else {
+                doctorInfo.style.display = 'none';
+            }
+        });
+
+        // Book appointment
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const doctorId = document.getElementById('doctor').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/book-appointment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        doctor_id: doctorId,
+                        date: date,
+                        time: time
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Show confirmation modal
+                    const modal = document.getElementById('confirmationModal');
+                    const details = document.getElementById('appointmentDetails');
+
+                    details.innerHTML = `
+                        <p><strong>Appointment ID:</strong> ${data.appointment_id}</p>
+                        <p><strong>Doctor:</strong> Dr. ${data.details.doctor_name}</p>
+                        <p><strong>Specialization:</strong> ${data.details.specialization}</p>
+                        <p><strong>Date:</strong> ${data.details.date}</p>
+                        <p><strong>Time:</strong> ${data.details.time}</p>
+                    `;
+
+                    modal.style.display = 'flex';
+                } else {
+                    errorDiv.textContent = data.error || 'Failed to book appointment';
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                errorDiv.textContent = 'Unable to connect to server. Please try again.';
+            }
+        });
+
+        // Close modal and redirect
+        function closeModal() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // Load doctors on page load
+        loadDoctors();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Patient Dashboard - Care_4_U Hospitals">
+    <title>Dashboard - Care_4_U Hospitals</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="background: var(--off-white);">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h1 style="font-size: 1.75rem; margin: 0;">Care<span class="highlight">_4_</span>U</h1>
+            </div>
+            <div class="nav-right">
+                <span id="userName" class="user-name"></span>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h2>Welcome, <span id="userNameDisplay"></span>! 👋</h2>
+            <p>Book your appointment with our expert doctors</p>
+        </div>
+
+        <div class="doctors-section">
+            <div class="section-header">
+                <h3>Our Expert Doctors</h3>
+                <a href="book.html" class="btn btn-primary">Book Appointment</a>
+            </div>
+
+            <div id="loadingMessage" class="loading">Loading doctors...</div>
+            <div id="errorMessage" class="error-message"></div>
+
+            <div id="doctorsList" class="doctors-grid"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Check if user is logged in
+        const userId = localStorage.getItem('user_id');
+        const userName = localStorage.getItem('user_name');
+
+        if (!userId) {
+            window.location.href = 'index.html';
+        }
+
+        // Display user name
+        document.getElementById('userName').textContent = userName;
+        document.getElementById('userNameDisplay').textContent = userName;
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Doctor images mapping
+        const doctorImages = {
+            0: 'images/doctor-1.png',
+            1: 'images/doctor-2.png',
+            2: 'images/doctor-3.png',
+            3: 'images/doctor-4.png',
+            4: 'images/doctor-5.png',
+            5: 'images/doctor-6.png'
+        };
+
+        // Load doctors
+        async function loadDoctors() {
+            const loadingDiv = document.getElementById('loadingMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            const doctorsGrid = document.getElementById('doctorsList');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors`);
+                const data = await response.json();
+
+                loadingDiv.style.display = 'none';
+
+                if (data.success && data.doctors.length > 0) {
+                    doctorsGrid.innerHTML = data.doctors.map((doctor, index) => {
+                        const imageUrl = doctorImages[index % 6];
+                        return `
+                        <div class="doctor-card">
+                            <img src="${imageUrl}" alt="Dr. ${doctor.name}" class="doctor-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div class="doctor-icon" style="display: none;">👨‍⚕️</div>
+                            <h4>Dr. ${doctor.name}</h4>
+                            <p class="specialization">${doctor.specialization}</p>
+                            <div class="doctor-info">
+                                <p><strong>Doctor ID:</strong> ${doctor.doctor_id.substring(0, 8)}...</p>
+                            </div>
+                        </div>
+                    `;
+                    }).join('');
+                } else {
+                    doctorsGrid.innerHTML = '<p class="no-data">No doctors available at the moment.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = 'Unable to load doctors. Please try again later.';
+            }
+        }
+
+        // Load doctors on page load
+        loadDoctors();
+    </script>
+</body>
+
+</html>
