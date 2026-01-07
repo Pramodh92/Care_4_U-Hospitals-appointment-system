@@ -5,7 +5,7 @@
 // Update this URL when deploying to EC2
 // For local testing: http://localhost:5000
 // For EC2: http://YOUR_EC2_PUBLIC_IP:5000
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://100.27.210.130:5000';
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -27,7 +27,7 @@ function getCurrentUser() {
     if (!isAuthenticated()) {
         return null;
     }
-    
+
     return {
         user_id: localStorage.getItem('user_id'),
         name: localStorage.getItem('user_name'),
@@ -154,11 +154,11 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
             'Content-Type': 'application/json'
         }
     };
-    
+
     if (data && method !== 'GET') {
         options.body = JSON.stringify(data);
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
         const result = await response.json();
