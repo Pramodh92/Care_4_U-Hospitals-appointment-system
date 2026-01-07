@@ -29,7 +29,7 @@ doctors_table = dynamodb.Table('Care4U_Doctors')
 appointments_table = dynamodb.Table('Care4U_Appointments')
 
 # SNS Topic ARN - Update this with your actual SNS topic ARN after creation
-SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN', 'arn:aws:sns:us-east-1:ACCOUNT_ID:Care4U_Appointments')
+SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN', 'arn:aws:sns:us-east-1:892485120480:Care4U_Appointments')
 
 
 # ============================================
