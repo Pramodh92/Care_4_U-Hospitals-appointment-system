@@ -33,6 +33,54 @@ SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN', 'arn:aws:sns:us-east-1:892485120
 
 
 # ============================================
+# AUTO-SEEDING FUNCTION
+# ============================================
+
+def seed_doctors_if_empty():
+    """
+    Automatically seed doctors data if the Care4U_Doctors table is empty.
+    This runs on application startup to eliminate manual data entry.
+    """
+    try:
+        # Check if doctors table is empty
+        response = doctors_table.scan()
+        
+        if response['Count'] == 0:
+            print("\n" + "="*60)
+            print("📋 Doctors table is empty. Auto-seeding doctor data...")
+            print("="*60)
+            
+            # Load doctor data from JSON file
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            json_path = os.path.join(script_dir, 'local_data', 'doctors.json')
+            
+            with open(json_path, 'r') as f:
+                doctors = json.load(f)
+            
+            # Insert each doctor
+            success_count = 0
+            for doctor in doctors:
+                try:
+                    doctors_table.put_item(Item=doctor)
+                    print(f"  ✓ Added: Dr. {doctor['name']} ({doctor['specialization']})")
+                    success_count += 1
+                except Exception as e:
+                    print(f"  ✗ Failed to add Dr. {doctor['name']}: {str(e)}")
+            
+            print("="*60)
+            print(f"✅ Auto-seeding complete: {success_count}/{len(doctors)} doctors added")
+            print("="*60 + "\n")
+        else:
+            print(f"✓ Doctors table already populated with {response['Count']} doctors")
+            
+    except FileNotFoundError:
+        print("⚠️  Warning: doctors.json file not found. Skipping auto-seeding.")
+    except Exception as e:
+        print(f"⚠️  Warning: Could not auto-seed doctors data: {str(e)}")
+        print("   You may need to seed doctors manually or check your DynamoDB permissions.")
+
+
+# ============================================
 # AUTHENTICATION ENDPOINTS
 # ============================================
 
@@ -366,5 +414,11 @@ def internal_error(error):
 
 
 if __name__ == '__main__':
+    # Auto-seed doctors data if table is empty
+    print("\n🏥 Starting Care_4_U Hospitals Application...")
+    seed_doctors_if_empty()
+    
     # Run on all interfaces so it's accessible from outside EC2
+    print("🚀 Starting Flask server on http://0.0.0.0:5000")
+    print("="*60 + "\n")
     app.run(host='0.0.0.0', port=5000, debug=True)

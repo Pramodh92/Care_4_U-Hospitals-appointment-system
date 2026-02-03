@@ -16,6 +16,32 @@
 
 ---
 
+## ⚡ Quick Start
+
+**Deploy in 30 minutes using AWS Console only!**
+
+### For Students/Learners:
+1. **Create AWS resources** via console (IAM, DynamoDB, SNS, EC2) - [See QUICK_START.md](QUICK_START.md)
+2. **Clone and run** on EC2:
+   ```bash
+   git clone https://github.com/Pramodh92/Care_4_U-Hospitals-appointment-system.git
+   cd Care_4_U-Hospitals-appointment-system
+   bash setup_ec2.sh
+   export SNS_TOPIC_ARN='your-sns-topic-arn'
+   cd backend && python3 app.py
+   ```
+3. **Access** at `http://YOUR_EC2_IP:5000`
+
+> [!NOTE]
+> **No Manual Data Entry!** Doctor data auto-populates when you first run the app.
+
+📚 **Detailed Guides:**
+- [QUICK_START.md](QUICK_START.md) - 5-step console-only deployment
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide
+- [DOCTOR_DATA_IMPORT.md](DOCTOR_DATA_IMPORT.md) - Doctor data seeding options
+
+---
+
 ## 📖 Table of Contents
 
 - [Overview](#-overview)
@@ -275,20 +301,22 @@ Frontend will run on: `http://localhost:8000`
 
 ## 🌐 Deployment
 
-For complete AWS deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**
+For complete AWS deployment instructions, see **[QUICK_START.md](QUICK_START.md)** or **[DEPLOYMENT.md](DEPLOYMENT.md)**
 
-### Quick Deployment Overview
+### Quick Deployment Overview (Console-Only)
 
 1. **Create IAM Role** with DynamoDB and SNS permissions
-2. **Create DynamoDB Tables** (Users, Doctors, Appointments)
-3. **Seed Doctor Data** in DynamoDB
-4. **Create SNS Topic** and confirm email subscription
-5. **Launch EC2 Instance** with IAM role attached
-6. **Deploy Backend** (Flask application)
-7. **Deploy Frontend** (HTML/CSS/JS files)
-8. **Test End-to-End** functionality
+2. **Create DynamoDB Tables** (Users, Doctors, Appointments) - **Leave empty!**
+3. **Create SNS Topic** and confirm email subscription
+4. **Launch EC2 Instance** with IAM role attached
+5. **Clone repository** and run `setup_ec2.sh`
+6. **Run application** - Doctors auto-populate on first start!
 
-**Estimated Deployment Time:** 30-45 minutes
+**Estimated Deployment Time:** 30 minutes  
+**Cost:** $0 (within AWS Free Tier)
+
+> [!IMPORTANT]
+> **Auto-Seeding Feature:** The `Care4U_Doctors` table automatically populates with 5 doctors when you first run `app.py`. No manual console data entry required!
 
 ---
 

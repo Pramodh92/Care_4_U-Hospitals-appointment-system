@@ -134,137 +134,12 @@ This guide provides **step-by-step instructions** for deploying the Care_4_U Hos
 5. Click **Create table**
 6. Wait for table status to become **Active**
 
-### 2.5 Seed Doctors Data
+> [!IMPORTANT]
+> **No Manual Data Entry Required!**
+> 
+> The `Care4U_Doctors` table should be left **empty**. Doctor data will be automatically populated when you run the Flask application for the first time. The app will detect the empty table and auto-seed 5 doctors with their specializations and available time slots.
 
-1. Go to **Care4U_Doctors** table
-2. Click **Explore table items** → **Create item**
-3. Add the following items (one by one):
-
-**Doctor 1:**
-```json
-{
-  "doctor_id": {
-    "S": "doc-001"
-  },
-  "name": {
-    "S": "Sarah Johnson"
-  },
-  "specialization": {
-    "S": "Cardiology"
-  },
-  "available_slots": {
-    "L": [
-      {"S": "09:00"},
-      {"S": "10:00"},
-      {"S": "11:00"},
-      {"S": "14:00"},
-      {"S": "15:00"}
-    ]
-  }
-}
-```
-
-**Doctor 2:**
-```json
-{
-  "doctor_id": {
-    "S": "doc-002"
-  },
-  "name": {
-    "S": "Michael Chen"
-  },
-  "specialization": {
-    "S": "Pediatrics"
-  },
-  "available_slots": {
-    "L": [
-      {"S": "09:00"},
-      {"S": "10:00"},
-      {"S": "11:00"},
-      {"S": "14:00"},
-      {"S": "15:00"},
-      {"S": "16:00"}
-    ]
-  }
-}
-```
-
-**Doctor 3:**
-```json
-{
-  "doctor_id": {
-    "S": "doc-003"
-  },
-  "name": {
-    "S": "Emily Davis"
-  },
-  "specialization": {
-    "S": "Dermatology"
-  },
-  "available_slots": {
-    "L": [
-      {"S": "10:00"},
-      {"S": "11:00"},
-      {"S": "14:00"},
-      {"S": "15:00"},
-      {"S": "16:00"}
-    ]
-  }
-}
-```
-
-**Doctor 4:**
-```json
-{
-  "doctor_id": {
-    "S": "doc-004"
-  },
-  "name": {
-    "S": "Robert Martinez"
-  },
-  "specialization": {
-    "S": "Orthopedics"
-  },
-  "available_slots": {
-    "L": [
-      {"S": "09:00"},
-      {"S": "10:00"},
-      {"S": "12:00"},
-      {"S": "14:00"},
-      {"S": "15:00"}
-    ]
-  }
-}
-```
-
-**Doctor 5:**
-```json
-{
-  "doctor_id": {
-    "S": "doc-005"
-  },
-  "name": {
-    "S": "Jennifer Lee"
-  },
-  "specialization": {
-    "S": "General Medicine"
-  },
-  "available_slots": {
-    "L": [
-      {"S": "09:00"},
-      {"S": "10:00"},
-      {"S": "11:00"},
-      {"S": "12:00"},
-      {"S": "14:00"},
-      {"S": "15:00"},
-      {"S": "16:00"},
-      {"S": "17:00"}
-    ]
-  }
-}
-```
-
-✅ **DynamoDB Tables Created and Seeded!**
+✅ **DynamoDB Tables Created!**
 
 ---
 
@@ -397,61 +272,79 @@ git clone https://github.com/Pramodh92/Care_4_U-Hospitals-appointment-system.git
 cd Care_4_U-Hospitals-appointment-system
 ```
 
-### 5.4 Install Python Dependencies
+### 5.4 Run Setup Script
 
 ```bash
-# Install Flask, Boto3, and Bcrypt
-pip3 install flask boto3 bcrypt
-
-# Verify installations
-pip3 list | grep -E "flask|boto3|bcrypt"
+# Run the automated setup script
+bash setup_ec2.sh
 ```
+
+This script will:
+- Update system packages
+- Install Python 3 and pip
+- Install all required Python dependencies (Flask, boto3, etc.)
+- Verify installations
 
 ### 5.5 Configure SNS Topic ARN
 
 ```bash
-# Edit the backend app.py file
-cd backend
-nano app.py
+# Set SNS Topic ARN as environment variable (replace with your actual ARN from Step 3.2)
+export SNS_TOPIC_ARN='arn:aws:sns:us-east-1:YOUR_ACCOUNT_ID:Care4U_Appointments'
 
-# Find this line (around line 15):
-# SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN', 'arn:aws:sns:us-east-1:ACCOUNT_ID:Care4U_Appointments')
-
-# Replace with your actual SNS Topic ARN from Step 3.2
-# Example: SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:123456789012:Care4U_Appointments'
-
-# Press Ctrl+X, then Y, then Enter to save
-```
-
-**Alternative: Set Environment Variable**
-```bash
-# Set SNS Topic ARN as environment variable
-export SNS_TOPIC_ARN='arn:aws:sns:YOUR_REGION:YOUR_ACCOUNT_ID:Care4U_Appointments'
-
-# Add to .bashrc to persist across sessions
-echo "export SNS_TOPIC_ARN='arn:aws:sns:YOUR_REGION:YOUR_ACCOUNT_ID:Care4U_Appointments'" >> ~/.bashrc
+# Add to .bashrc to persist across sessions (optional)
+echo "export SNS_TOPIC_ARN='arn:aws:sns:us-east-1:YOUR_ACCOUNT_ID:Care4U_Appointments'" >> ~/.bashrc
 ```
 
 ### 5.6 Run Flask Backend Application
 
 ```bash
-# Make sure you're in the backend directory
-cd ~/Care_4_U-Hospitals-appointment-system/backend
+# Navigate to backend directory
+cd backend
 
-# Run Flask application in background
+# Run Flask application
+python3 app.py
+```
+
+**Expected output:**
+```
+🏥 Starting Care_4_U Hospitals Application...
+============================================================
+📋 Doctors table is empty. Auto-seeding doctor data...
+============================================================
+  ✓ Added: Dr. Sarah Johnson (Cardiology)
+  ✓ Added: Dr. Michael Chen (Pediatrics)
+  ✓ Added: Dr. Emily Davis (Dermatology)
+  ✓ Added: Dr. Robert Martinez (Orthopedics)
+  ✓ Added: Dr. Jennifer Lee (General Medicine)
+============================================================
+✅ Auto-seeding complete: 5/5 doctors added
+============================================================
+
+🚀 Starting Flask server on http://0.0.0.0:5000
+============================================================
+
+ * Serving Flask app 'app'
+ * Debug mode: on
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://YOUR_PRIVATE_IP:5000
+```
+
+> [!NOTE]
+> **Auto-Seeding Feature**
+> 
+> The application automatically checks if the `Care4U_Doctors` table is empty on startup. If empty, it will automatically populate the table with 5 doctors from the `local_data/doctors.json` file. This eliminates the need for manual data entry!
+
+**To run in background:**
+```bash
 nohup python3 app.py > app.log 2>&1 &
 
 # Check if running
 ps aux | grep app.py
 
-# View logs to verify it's running
+# View logs
 tail -f app.log
 # Press Ctrl+C to exit log view
-```
-
-You should see output like:
-```
- * Running on http://0.0.0.0:5000
 ```
 
 ✅ **Backend Deployed and Running!**

@@ -1,0 +1,186 @@
+{
+    "Care4U_Doctors": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "doctor_id": {
+                        "S": "doc-001"
+                    },
+                    "name": {
+                        "S": "Sarah Johnson"
+                    },
+                    "specialization": {
+                        "S": "Cardiology"
+                    },
+                    "available_slots": {
+                        "L": [
+                            {
+                                "S": "09:00"
+                            },
+                            {
+                                "S": "10:00"
+                            },
+                            {
+                                "S": "11:00"
+                            },
+                            {
+                                "S": "14:00"
+                            },
+                            {
+                                "S": "15:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "doctor_id": {
+                        "S": "doc-002"
+                    },
+                    "name": {
+                        "S": "Michael Chen"
+                    },
+                    "specialization": {
+                        "S": "Pediatrics"
+                    },
+                    "available_slots": {
+                        "L": [
+                            {
+                                "S": "09:00"
+                            },
+                            {
+                                "S": "10:00"
+                            },
+                            {
+                                "S": "11:00"
+                            },
+                            {
+                                "S": "14:00"
+                            },
+                            {
+                                "S": "15:00"
+                            },
+                            {
+                                "S": "16:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "doctor_id": {
+                        "S": "doc-003"
+                    },
+                    "name": {
+                        "S": "Emily Davis"
+                    },
+                    "specialization": {
+                        "S": "Dermatology"
+                    },
+                    "available_slots": {
+                        "L": [
+                            {
+                                "S": "10:00"
+                            },
+                            {
+                                "S": "11:00"
+                            },
+                            {
+                                "S": "14:00"
+                            },
+                            {
+                                "S": "15:00"
+                            },
+                            {
+                                "S": "16:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "doctor_id": {
+                        "S": "doc-004"
+                    },
+                    "name": {
+                        "S": "Robert Martinez"
+                    },
+                    "specialization": {
+                        "S": "Orthopedics"
+                    },
+                    "available_slots": {
+                        "L": [
+                            {
+                                "S": "09:00"
+                            },
+                            {
+                                "S": "10:00"
+                            },
+                            {
+                                "S": "12:00"
+                            },
+                            {
+                                "S": "14:00"
+                            },
+                            {
+                                "S": "15:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "doctor_id": {
+                        "S": "doc-005"
+                    },
+                    "name": {
+                        "S": "Jennifer Lee"
+                    },
+                    "specialization": {
+                        "S": "General Medicine"
+                    },
+                    "available_slots": {
+                        "L": [
+                            {
+                                "S": "09:00"
+                            },
+                            {
+                                "S": "10:00"
+                            },
+                            {
+                                "S": "11:00"
+                            },
+                            {
+                                "S": "12:00"
+                            },
+                            {
+                                "S": "14:00"
+                            },
+                            {
+                                "S": "15:00"
+                            },
+                            {
+                                "S": "16:00"
+                            },
+                            {
+                                "S": "17:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}
